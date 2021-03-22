@@ -15,6 +15,7 @@ const request = {
         sampleRateHertz,
         languageCode: 'en-GB',
         profanityFilter: true,
+        enableAutomaticPunctuation: true,
     },
     interimResults: true,
 } as protos.google.cloud.speech.v1.IStreamingRecognitionConfig;
