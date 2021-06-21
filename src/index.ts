@@ -29,19 +29,25 @@ const recordingStream = recorder
         silence: '10.0',
     })
     .stream()
-    .on('error', console.error);
+    .on('error', (e) => {
+        console.error("RECORDING STREAM ERROR");
+        console.error(e);
+    });
 
 function init(): Promise<void> {
+    console.info("stream starting");
     return new Promise((resolve) => {
         const recognitionStream = client
             .streamingRecognize(request)
-            .on('error', console.error)
+            .on('error', () => {
+                recognitionStream.destroy();
+                resolve();
+            })
             .on('data', data => {
                 const result = data.results[0];
                 const transcript = result.alternatives[0]?.transcript;
 
                 if (!transcript) {
-                    console.log("END REACHED!!");
                     recognitionStream.destroy();
                     resolve();
                 } else {
@@ -62,7 +68,7 @@ function init(): Promise<void> {
 
 async function run() {
     while (true) {
-        await init();
+        await init().catch(() => {});
     }
 }
 
